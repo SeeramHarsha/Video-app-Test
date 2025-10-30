@@ -23,10 +23,6 @@ if not GOOGLE_API_KEY:
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-2.0-flash')
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
 # API endpoint to generate annotations
 @app.route('/generate_annotations', methods=['POST'])
 def generate_annotations():
@@ -76,8 +72,6 @@ def generate_annotations():
       ]
     }}
     """
-
-    # Call Gemini API
     try:
         response = model.generate_content([prompt, image])
         print(f"Raw response: {response.text}")
