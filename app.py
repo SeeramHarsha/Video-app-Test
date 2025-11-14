@@ -50,7 +50,7 @@ def generate_annotations():
 
         Generate EXACTLY 3 long, clear, explainable annotations.
         Each must be a sentence.
-        Focus ONLY on what is inside the white box.
+        Focus ONLY on what is inside the white box and dont mention about the box the box the region where the user tapped on.
 
         Topic: "{topic}"
         Description: "{description}"
