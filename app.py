@@ -21,12 +21,17 @@ model = genai.GenerativeModel("gemini-2.0-flash")
 @app.route('/generate_annotations', methods=['POST'])
 def generate_annotations():
     try:
-        topic = request.form.get('topic')
-        description = request.form.get('description')
+        # Normalize keys (strip whitespace)
+        form_data = {k.strip(): v for k, v in request.form.items()}
+        
+        topic = form_data.get('topic')
+        description = form_data.get('description')
+        class_level = form_data.get('class')
+        subject = form_data.get('subject')
         image_file = request.files.get('image')
 
-        if not topic or not description or not image_file:
-            return jsonify({"error": "Missing topic, description, or image"}), 400
+        if not topic or not description or not class_level or not subject or not image_file:
+            return jsonify({"error": "Missing topic, description, class, subject, or image"}), 400
 
         # Save temp file
         ext = image_file.filename.split('.')[-1]
@@ -48,16 +53,20 @@ def generate_annotations():
         prompt = f"""
         You are an AI assistant that generates detailed educational annotations.
 
-        Generate EXACTLY 3 long, clear, explainable annotations.
-        Each must be a sentence.
-        Focus ONLY on what is inside the white box and dont mention about the box the box the region where the user tapped on.
+        Generate a short title/headline describing the action in the white box.
+        Then, generate EXACTLY 3 long, clear, explainable annotations providing details about this action.
+        Each annotation must be a sentence.
+        Focus ONLY on what is inside the white box.
 
+        Class: "{class_level}"
+        Subject: "{subject}"
         Topic: "{topic}"
         Description: "{description}"
 
         Return JSON only:
 
         {{
+          "headline": "Short title describing the action",
           "annotations": [
             "First detailed annotation.",
             "Second detailed annotation.",
